@@ -1,3 +1,6 @@
+
+VOIR L'IMAGE POUR LE MODELE
+
 1. Domaine métier (le cœur logique)
 C’est la partie qui représente la réalité du terrain : les villes, les stations météo et les relevés météo.
 
@@ -42,35 +45,3 @@ En résumé : comment ça marche ?
 API → Api_Fetcher → Meteo_Mapper → Domaine (ex : Station)
      → Meteo_Service → Console_View → Affichage à l’utilisateur
 
-algodev/
-│
-├── src/
-│   ├── domain/                  # Entités métier + Value Objects
-│   │   ├── meteo.py
-│   │   ├── station.py
-│   │   ├── ville.py
-│   │   └── mesure/
-│   │       ├── temperature.py
-│   │       ├── humidite.py
-│   │       └── pression.py
-│   │       └── raw_data.py
-│   │
-│   ├── infrastructure/          # API, mapping, dataset profiling
-│   │   ├── api_fetcher.py
-│   │   ├── meteo_mapper.py
-│   │   └── dataset_documentation.py
-│   │
-│   ├── application/             # Services / orchestrations
-│   │   ├── meteo_service.py
-│   │   ├── data_cleaner.py
-│   │   └── station_selector.py
-│   │
-│   └── ui/                      # Interface utilisateur
-│       └── console_view.py
-│
-├── tests/
-├── docs/
-│   └── uml.png
-├── main.py
-├── requirements.txt
-└── README.md
