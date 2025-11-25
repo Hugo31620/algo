@@ -29,4 +29,4 @@ class CacheManager:
         os.makedirs("cache", exist_ok=True)
         with open(self.CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(raw_data.data, f, indent=2)
-        print("💾 Cache mis à jour ✅")
+        print(" Cache mis à jour ")

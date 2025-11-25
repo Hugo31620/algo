@@ -11,4 +11,4 @@ if __name__ == "__main__":
         raw_data = fetcher.fetch()
         cache.save_cache(raw_data)
 
-    print(f"➡️ Données utilisées : {len(raw_data.data)} entrées")
+    print(f"Données utilisées : {len(raw_data.data)} entrées")

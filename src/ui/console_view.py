@@ -8,36 +8,36 @@ class ConsoleView:
 
     def run(self):
         """Affiche la liste des stations, sélection puis dernière mesure valide (rafraîchie)."""
-        # ⚠️ On force un rafraîchissement pour ne pas lire un vieux cache
+        #  On force un rafraîchissement pour ne pas lire un vieux cache
         self.service.load_data(force_refresh=True)
 
         stations = self.service.get_station_names()
 
-        print("\n🌤️ Stations météo disponibles :")
+        print("\nStations météo disponibles :")
         for index, name in enumerate(stations, start=1):
             print(f"{index}. {name}")
 
         try:
             choice = int(input("\nChoisissez une station par numéro : ")) - 1
         except ValueError:
-            print("❌ Veuillez entrer un nombre valide. Fin du programme.")
+            print("Veuillez entrer un nombre valide. Fin du programme.")
             return
 
         if not (0 <= choice < len(stations)):
-            print("❌ Choix invalide, fin du programme.")
+            print("Choix invalide, fin du programme.")
             return
 
         selected_station = stations[choice]
-        print(f"\n📍 Données pour la station : {selected_station}\n")
+        print(f"\nDonnées pour la station : {selected_station}\n")
 
         records = self.service.get_data_for_station(selected_station)
         if not records:
-            print("❌ Aucune donnée disponible.")
+            print("Aucune donnée disponible.")
             return
 
         valid_records = self._filter_valid_records(records)
         if not valid_records:
-            print("❌ Aucune donnée valide trouvée (valeurs aberrantes filtrées).")
+            print("Aucune donnée valide trouvée (valeurs aberrantes filtrées).")
             return
 
         latest = max(valid_records, key=lambda r: r.timestamp)

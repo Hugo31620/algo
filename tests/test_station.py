@@ -14,4 +14,4 @@ def test_station_object():
         timestamp="2025-11-03T10:00:00"
     )
 
-    print("✅ Station créée :", station.name, station.temperature, station.humidite, station.pression)
+    print("Station créée :", station.name, station.temperature, station.humidite, station.pression)
