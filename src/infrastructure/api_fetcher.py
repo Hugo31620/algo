@@ -5,20 +5,20 @@ from src.domain.mesure.raw_data import RawMeteoData
 class ApiFetcher:
     """Récupère les données météo brutes depuis l'API Open Data Toulouse."""
 
-    API_URL = (
-        "https://data.toulouse-metropole.fr/api/explore/v2.1/catalog/datasets/"
-        "42-station-meteo-toulouse-parc-compans-cafarelli/records"
-        "?order_by=heure_utc%20desc&limit=100"
-    )
+    def __init__(self, endpoint: str, limit: int = 100):
+        self.url = f"{endpoint}&limit={limit}"
 
     def fetch(self) -> RawMeteoData:
-        """Envoie une requête à l'API et retourne les données brutes dans un RawMeteoData."""
+        """Requête API → RawMeteoData."""
         try:
-            response = requests.get(self.API_URL)
+            response = requests.get(self.url)
             response.raise_for_status()
+
+            print(f"✅ Données récupérées depuis : {self.url}")
+
             records = response.json().get("results", [])
-            print("✅ Données brutes récupérées depuis l'API")
             return RawMeteoData(records)
+
         except Exception as e:
-            print(f"❌ Erreur lors de la récupération des données API : {e}")
+            print(f"❌ Erreur API ({self.url}) : {e}")
             return RawMeteoData([])
