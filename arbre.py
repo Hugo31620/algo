@@ -16,13 +16,13 @@ class BinaryTree:
             self._insert_recursive(value, self.root)
 
     def _insert_recursive(self, value, current_node):
-        if value < current_node.value:           # Aller à gauche
+        if value < current_node.value:           
             if current_node.left is None:
                 current_node.left = Node(value)
             else:
                 self._insert_recursive(value, current_node.left)
 
-        elif value > current_node.value:         # Aller à droite
+        elif value > current_node.value:        
             if current_node.right is None:
                 current_node.right = Node(value)
             else:
