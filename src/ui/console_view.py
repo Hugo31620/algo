@@ -1,44 +1,68 @@
 class ConsoleView:
-    """Interface console pour afficher les données météo."""
+    """Interface console moderne + navigation station par station."""
 
     def __init__(self, service):
         self.service = service
 
+    # ---------------------------------------------------------
+    #  STYLE MODERNE
+    # ---------------------------------------------------------
+    def print_box(self, station_name: str, latest):
+        print("\n" + "═" * 50)
+        print(f"🛰️  Station : {station_name}")
+        print("═" * 50)
+
+        print(f"📅 Date/Heure :       {latest.timestamp}")
+        print(f"🌡️ Température :      {latest.temperature.value}")
+        print(f"💧 Humidité :         {latest.humidite.value}")
+        print(f"🔽 Pression :         {latest.pression.value}")
+        print(f"☔ Pluie :            {latest.pluie} mm")
+        print(f"🌬️ Vent moyen :      {latest.vent_moyen} m/s")
+        print(f"💨 Rafale max :       {latest.rafale_max} m/s")
+
+        print("═" * 50 + "\n")
+
+    # ---------------------------------------------------------
+    #  BOUCLE PRINCIPALE : LISTE CHAÎNÉE INTERACTIVE
+    # ---------------------------------------------------------
     def run(self):
-        """Boucle principale d'affichage."""
         self.service.load_all_stations()
 
-        stations = self.service.get_station_names()
+        # Liste chaînée LOGIQUE : on garde une liste des stations non visitées
+        remaining = self.service.get_station_names()
 
-        print("\nStations météo disponibles :")
-        for idx, name in enumerate(stations, 1):
-            print(f"{idx}. {name}")
+        while remaining:
+            print("\nStations restantes :")
+            for idx, name in enumerate(remaining, 1):
+                print(f"{idx}. {name}")
 
-        try:
-            choice = int(input("\nChoisissez une station par numéro : "))
-        except ValueError:
-            print("❌ Entrée invalide.")
-            return
+            try:
+                choice = int(input("\n➡️  Choisissez une station : "))
+            except ValueError:
+                print("❌ Entrée invalide.")
+                return
 
-        if not (1 <= choice <= len(stations)):
-            print("❌ Choix invalide.")
-            return
+            if not (1 <= choice <= len(remaining)):
+                print("❌ Choix invalide.")
+                return
 
-        selected_station = stations[choice - 1]
-        print(f"\nDonnées pour la station : {selected_station}\n")
+            station_name = remaining.pop(choice - 1)  # ❗ On enlève la station choisie
 
-        # 🔥 NOUVELLE MÉTHODE → ON RÉCUPÈRE UNIQUEMENT LA DONNÉE LA PLUS RÉCENTE
-        latest = self.service.get_latest_for_station(selected_station)
+            latest = self.service.get_latest_for_station(station_name)
+            if latest is None:
+                print("⚠️ Aucune donnée.")
+                continue
 
-        if latest is None:
-            print("⚠️ Aucune donnée disponible.")
-            return
+            # 🔥 Affichage moderne
+            self.print_box(station_name, latest)
 
-        # 🟦 Affichage formaté
-        print(f"Date/Heure : {latest.timestamp}")
-        print(f" - Température : {latest.temperature.value}")
-        print(f" - Humidité : {latest.humidite.value}")
-        print(f" - Pression : {latest.pression.value}")
-        print(f" - Pluie : {latest.pluie} mm")
-        print(f" - Vent moyen : {latest.vent_moyen} m/s")
-        print(f" - Rafale max : {latest.rafale_max} m/s")
+            # Si plus de station, on s’arrête
+            if not remaining:
+                print("✔️ Plus aucune station restante. Fin du programme.")
+                break
+
+            # Sinon on propose de continuer
+            cont = input("➡️  Voulez-vous afficher une autre station ? (o/n) : ")
+            if cont.lower() != "o":
+                print("👋 Fin du programme.")
+                break
