@@ -1,47 +1,119 @@
+1. Présentation du projet
 
-VOIR L'IMAGE POUR LE MODELE
-
-1. Domaine métier (le cœur logique)
-C’est la partie qui représente la réalité du terrain : les villes, les stations météo et les relevés météo.
-
-Meteo_Ville : représente la météo globale pour toutes les villes gérées par l'application.
-
-Nom_Station : groupe de stations météo dans une ville donnée (par ex. : les stations de métro de Toulouse).
-
-Station : une véritable station météo, avec sa position GPS et ses mesures.
-
-Temperature, Humidite, Pression : objets qui contiennent une mesure précise (pour éviter les erreurs et garder un code propre).
+Application Python permettant de consulter les données météo en temps réel
+des stations de Toulouse Métropole via l’API OpenData officielle.
 
 
-2. Accès aux données (Infrastructure)
-Cette partie sert à aller chercher les données météo en dehors du programme.
+2. Ouvrir l'application
 
-Api_Fetcher : récupère les données brutes en appelant l’API Open Data Toulouse.
+Ouvrir le terminal et installer les dépendances et tkinter (si non natif à ton python) : 
+pip install -r requirements.txt
 
-Meteo_Mapper : transforme ces données brutes en objets Python prêts à être utilisés.
-
-Dataset_Documentation : génère une compréhension claire des données (statistiques, rapport...).
-
-
-3. Logique applicative (Services)
-Ce sont les étapes concrètes du traitement que l’application doit faire.
-
-Meteo_Service : le chef d’orchestre. Récupère les données → les organise → et les envoie à l’affichage.
-
-Data_Cleaner : "nettoie" ou prépare les données si besoin (ex : convertir des chaînes en nombres).
-
-Station_Selector : permet de choisir quelle station afficher.
+Ensuite pour lancer l'application: 
+python main.py
 
 
+3. Structure du projet
 
-4. Interface utilisateur (UI)
-C’est la sortie visible pour l’utilisateur.
+algodev/
+│
+├── src/
+│   ├── application/      → logique métier (services, factory, event bus)
+│   ├── domain/           → modèles et structures de données
+│   ├── infrastructure/   → accès API, extraction, mapping
+│   └── ui/               → interface graphique Tkinter
+│
+├── tests/                → tests unitaires
+├── main.py               → point d’entrée
+└── README.md
 
-Console_View : affiche le résultat directement dans le terminal, et permet de naviguer entre les stations.
+Fonctionnalités : 
+
+- Récupération météo en ligne via API Toulouse Métropole
+- Affichage température, humidité, pression, vent, pluie
+- Historique des consultations
+- Mise en cache des données (optimisation)
+- Interface graphique simple et ergonomique
 
 
+4. Implémentation 
 
-En résumé : comment ça marche ?
-API → Api_Fetcher → Meteo_Mapper → Domaine (ex : Station)
-     → Meteo_Service → Console_View → Affichage à l’utilisateur
+- Liste chaînée
+Fichier : src/domain/linked_list.py
+Utilisée pour stocker l’historique des consultations dans l’interface.
+
+- File
+Fichier : src/ui/tkinter_app.py
+Utilisée pour gérer les requêtes utilisateur de manière asynchrone (thread worker).
+
+- Dictionnaire
+Fichier : src/application/station_directory_service.py
+Utilisé pour mettre en cache les données météo déjà récupérées.
+
+Fichier : src/infrastructure/station_registry.py
+stocke les stations et leurs URLs API.
+
+5. Design Pattern
+
+- Factory Pattern
+Fichier : src/application/factory.py
+Permet de créer et configurer l’application et ses dépendances sans couplage direct.
+
+- Strategy Pattern
+Fichier : src/infrastructure/meteo_clients.py
+Permet de changer la source de données météo : API réelle et mock pour les tests
+
+- Observer Pattern
+Fichier : src/application/event_bus.py
+Permet de notifier l’interface lorsque les données sont chargées sans bloquer l’application.
+
+6.Respect des principes de conception
+
+SOLID
+- Séparation claire des responsabilités (UI / domaine / infrastructure)
+- Injection de dépendances (Strategy)
+- Classes spécialisées.
+
+KISS
+- Logique simple, lisible.
+- Pas de complexité inutile.
+
+DRY
+- Extraction centralisée des données API (record_extractor.py).
+
+YAGNI
+- Pas de fonctionnalités non nécessaires.
+- Chaque classe est utilisée.
+
+7. Tests unitaires
+
+Les tests couvrent les structures de données, l’extraction et l’agrégation météo, le service principal, le pattern Observer
+
+Lancer les tests :
+pytest -q
+
+8. Respect des normes PEP8
+
+Le code est validé avec pylint. Lancer pylint :
+pylint src tests
+
+9. Documentation technique 
+
+Flux de fonctionnement
+
+- L’utilisateur choisit une station.
+- La requête est placée dans une file (Queue).
+- Un worker récupère les données via l’API.
+- Les données sont nettoyées et agrégées.
+- Un événement est envoyé à l’interface (Observer).
+- L’interface affiche les résultats.
+- L’historique est stocké dans la liste chaînée.
+
+
+Source des données
+
+API OpenData :
+https://data.toulouse-metropole.fr
+
+Données publiques, actualisées en temps réel.
 

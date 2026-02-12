@@ -1,24 +1,60 @@
+"""
+Client HTTP chargé de récupérer les données météo depuis l'API distante.
+
+Ce module encapsule l'appel réseau afin d'isoler l'infrastructure
+du reste de l'application.
+"""
+
+from __future__ import annotations
+
 import requests
+
 from src.domain.mesure.raw_data import RawMeteoData
 
 
-class ApiFetcher:
-    """Récupère les données météo brutes depuis l'API Open Data Toulouse."""
+class ApiFetcher:  # pylint: disable=too-few-public-methods
+    """
+    Adaptateur HTTP pour la récupération des données météo.
 
-    def __init__(self, endpoint: str, limit: int = 100):
-        self.url = f"{endpoint}&limit={limit}"
+    Cette classe est volontairement simple :
+    - une responsabilité unique (appel API)
+    - aucune logique métier
+    """
+
+    def __init__(self, endpoint: str, timeout_seconds: int = 10):
+        """
+        Initialise le fetcher HTTP.
+
+        Args:
+            endpoint: URL de l'API à interroger
+            timeout_seconds: délai maximal de la requête HTTP
+        """
+        self._endpoint = endpoint
+        self._timeout = timeout_seconds
 
     def fetch(self) -> RawMeteoData:
-        """Requête API → RawMeteoData."""
-        try:
-            response = requests.get(self.url)
-            response.raise_for_status()
+        """
+        Exécute l'appel HTTP et retourne les données brutes.
 
-            print(f"✅ Données récupérées depuis : {self.url}")
+        Returns:
+            RawMeteoData: données météo brutes issues de l'API
 
-            records = response.json().get("results", [])
-            return RawMeteoData(records)
+        Raises:
+            requests.RequestException: en cas d'erreur réseau ou HTTP
+        """
+        response = requests.get(self._endpoint, timeout=self._timeout)
+        response.raise_for_status()
 
-        except Exception as e:
-            print(f"❌ Erreur API ({self.url}) : {e}")
-            return RawMeteoData([])
+        payload = response.json()
+
+        # API Toulouse Explore v2.1 : données dans "results"
+        results = payload.get("results")
+        if isinstance(results, list):
+            return RawMeteoData(results)
+
+        # Fallback si structure différente
+        data = payload.get("data")
+        if isinstance(data, list):
+            return RawMeteoData(data)
+
+        return RawMeteoData([])

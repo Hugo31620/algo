@@ -1,10 +1,26 @@
-class Temperature:
-    """Représente une température (en °C), avec validation et formatage."""
+"""
+Value object représentant une mesure de température.
 
-    def __init__(self, value: float):
-        if not (-100 <= value <= 100):
-            raise ValueError("La température doit être comprise entre -100°C et 100°C.")
-        self.value = f"{value:.1f} °C"
+Cette classe encapsule une température exprimée en degrés Celsius.
+Elle est volontairement simple et utilisée par le modèle Station.
+"""
 
-    def __str__(self):
-        return self.value
+
+class Temperature:  # pylint: disable=too-few-public-methods
+    """
+    Représente une mesure de température.
+
+    Cette classe est un value object :
+    - elle encapsule uniquement une valeur
+    - elle ne contient pas de logique métier
+    - elle est utilisée dans le domaine Station
+    """
+
+    def __init__(self, value):
+        """
+        Initialise une mesure de température.
+
+        Args:
+            value: température en degrés Celsius (ou None si non disponible)
+        """
+        self.value = value

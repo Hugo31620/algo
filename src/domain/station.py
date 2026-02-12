@@ -1,26 +1,44 @@
-from datetime import datetime
-from src.domain.mesure.temperature import Temperature
-from src.domain.mesure.humidite import Humidite
-from src.domain.mesure.pression import Pression
+# pylint: disable=too-few-public-methods
+"""
+Modèle domaine représentant un état météo agrégé d'une station.
 
-class Station:
-    """Représente une station météo structurée avec mesures nettoyées."""
+Cette classe est un conteneur de données (DTO) utilisé par le service applicatif
+et l'interface graphique. Elle est volontairement minimale (pas de logique métier)
+afin de respecter SRP et faciliter la sérialisation / tests.
+"""
 
-    def __init__(self, name: str, latitude: float, longitude: float,
-                 temperature: Temperature, humidite: Humidite,
-                 pression: Pression, 
-                 pluie: float, pluie_intensite_max: float,
-                 vent_moyen: float, rafale_max: float,
-                 timestamp: datetime):
-        
-        self.name = name
-        self.latitude = latitude
-        self.longitude = longitude
-        self.temperature = temperature
-        self.humidite = humidite
-        self.pression = pression
-        self.pluie = pluie
-        self.pluie_intensite_max = pluie_intensite_max
-        self.vent_moyen = vent_moyen
-        self.rafale_max = rafale_max
-        self.timestamp = timestamp
+# pylint: disable=too-few-public-methods
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional, Any
+
+
+@dataclass(frozen=True)
+class Station:  # pylint: disable=too-few-public-methods
+    """
+    Représente la dernière lecture météo connue d'une station.
+
+    Attributs:
+        name: nom de la station
+        timestamp: date/heure de mesure (datetime) ou valeur équivalente
+        temperature: objet Temperature (value object) ou équivalent
+        humidity: objet Humidite (value object) ou équivalent
+        pressure: objet Pression (value object) ou équivalent
+        rain: pluie en mm si disponible
+        wind_speed: vitesse du vent si disponible
+        wind_direction: direction du vent en degrés si disponible
+
+    Note:
+        Certains champs peuvent être absents selon la station et les capteurs.
+    """
+
+    name: str
+    timestamp: Any
+    temperature: Any
+    humidity: Any
+    pressure: Any
+    rain: Optional[float] = None
+    wind_speed: Optional[float] = None
+    wind_direction: Optional[float] = None
