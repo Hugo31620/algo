@@ -3,6 +3,7 @@
 Application Python permettant de consulter les données météo en temps réel
 des stations de Toulouse Métropole via l’API OpenData officielle.
 
+Python 3.11.5
 
 2. Ouvrir l'application
 
@@ -114,6 +115,3 @@ Source des données
 
 API OpenData :
 https://data.toulouse-metropole.fr
-
-Données publiques, actualisées en temps réel.
-
